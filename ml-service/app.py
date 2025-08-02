@@ -1,6 +1,8 @@
 from flask_cors import CORS
 from flask import Flask, request, jsonify
 from summarizer import generate_summary
+from transcriber import get_transcript
+
 
 app = Flask(__name__)
 CORS(app)
@@ -11,25 +13,34 @@ def summarize():
     video_url = data.get('videoUrl')
     prompt = data.get('prompt')
 
-     # Dummy text for now (replace with Whisper later)
-    transcript = "The video explains the lifecycle of a butterfly, starting from egg to caterpillar, then chrysalis and finally an adult butterfly."
+    print("✅ Received request with URL:", video_url)
+    print("📝 Prompt:", prompt)
 
-    summary = generate_summary(transcript, prompt)
+    # Step 1: Transcript
+    print("🎬 Step 1: Getting transcript (YT API or Whisper fallback)...")
+    try:
+        transcript = get_transcript(video_url)
+        print("✅ Transcript (first 150 chars):", transcript[:150], "...")
+    except Exception as e:
+        print("❌ Transcript failed:", str(e))
+        return jsonify({"error": f"Transcript failed: {str(e)}"}), 500
+    
+    # Step 2: Summarize
+    print("🧠 Step 2: Generating summary...")
+    try:
+        summary = generate_summary(transcript, prompt)
+        print("✅ Summary:", summary)
+    except Exception as e:
+        print("❌ Summarization failed:", str(e))
+        return jsonify({"error": f"Summarization failed: {str(e)}"}), 500
 
+    print("🚀 Done! Returning response.")
 
-    # Dummy response (we'll replace with ML logic later)
     return jsonify({
         "summary": summary,
-        "chapters": [
-            {"start": "00:00", "title": "Intro"},
-            {"start": "01:00", "title": "Main Ideas"},
-            {"start": "02:30", "title": "Wrap Up"}
-        ],
-        "keyframes": [
-            "https://via.placeholder.com/120x80?text=Frame1",
-            "https://via.placeholder.com/120x80?text=Frame2"
-        ],
-        "audio": ["Happy", "Neutral"]
+        "chapters": [],
+        "keyframes": [],
+        "audio": []
     })
 
 if __name__ == '__main__':

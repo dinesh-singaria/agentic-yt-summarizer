@@ -1,27 +1,34 @@
-from transformers import pipeline
+import os
+from openai import OpenAI
+from dotenv import load_dotenv
+from pathlib import Path
 
-# Load the BART summarizer
-summarizer = pipeline("summarization", model="facebook/bart-large-cnn")
+# Load .env file from current folder
+env_path = Path(__file__).resolve().parent / ".env"
+load_dotenv(dotenv_path=env_path)
 
-def generate_summary(text: str, user_prompt: str = "") -> str:
-    """
-    Summarizes the input text with an optional user prompt.
+api_key = os.getenv("OPENAI_API_KEY")
+if not api_key:
+    raise ValueError("❌ OPENAI_API_KEY is missing in .env")
 
-    Parameters:
-        text (str): The input transcript to summarize
-        user_prompt (str): A custom user prompt like 'Summarize like I’m 10'
+client = OpenAI(api_key=api_key)
 
-    Returns:
-        str: The personalized summary
-    """
-    # Truncate text if it's too long for BART
-    if len(text) > 1024:
-        text = text[:1024]
+def generate_summary(transcript: str, user_prompt: str = "") -> str:
+    if not transcript.strip():
+        return "Transcript is empty."
 
-    summary = summarizer(text, max_length=130, min_length=30, do_sample=False)[0]['summary_text']
+    prompt = f"{user_prompt.strip()}\n\nTranscript:\n{transcript.strip()}"
 
-    if user_prompt:
-        # Add personalization (simple prompt injection)
-        summary = f"{user_prompt.strip().capitalize()}: {summary}"
-
-    return summary
+    try:
+        response = client.chat.completions.create(
+            model="gpt-3.5-turbo",
+            messages=[
+                {"role": "system", "content": "You are a helpful assistant that summarizes videos based on transcript and user prompts."},
+                {"role": "user", "content": prompt}
+            ],
+            max_tokens=300,
+            temperature=0.5
+        )
+        return response.choices[0].message.content
+    except Exception as e:
+        return f"❌ Error with OpenAI API: {str(e)}"
