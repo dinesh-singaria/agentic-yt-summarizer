@@ -1,34 +1,25 @@
 import os
-from openai import OpenAI
 from dotenv import load_dotenv
-from pathlib import Path
+from phi.agent import Agent, RunResponse
+from phi.model.google import Gemini
+from phi.tools.duckduckgo import DuckDuckGo
 
-# Load .env file from current folder
-env_path = Path(__file__).resolve().parent / ".env"
-load_dotenv(dotenv_path=env_path)
+load_dotenv()
 
-api_key = os.getenv("OPENAI_API_KEY")
-if not api_key:
-    raise ValueError("❌ OPENAI_API_KEY is missing in .env")
+# Confirm the environment variable is loaded correctly
+if not os.getenv("GEMINI_API_KEY"):
+    raise RuntimeError(" GEMINI_API_KEY not found in environment")
 
-client = OpenAI(api_key=api_key)
+# Create a phantom “agent” powered by Gemini 2.0 Flash Exp
+agent = Agent(
+    name="SummarizerAgent",
+    model=Gemini(id="gemini-2.0-flash-exp"),
+    tools=[DuckDuckGo()],
+    markdown=True  # summaries prefer plain text
+)
 
-def generate_summary(transcript: str, user_prompt: str = "") -> str:
-    if not transcript.strip():
-        return "Transcript is empty."
-
-    prompt = f"{user_prompt.strip()}\n\nTranscript:\n{transcript.strip()}"
-
-    try:
-        response = client.chat.completions.create(
-            model="gpt-3.5-turbo",
-            messages=[
-                {"role": "system", "content": "You are a helpful assistant that summarizes videos based on transcript and user prompts."},
-                {"role": "user", "content": prompt}
-            ],
-            max_tokens=300,
-            temperature=0.5
-        )
-        return response.choices[0].message.content
-    except Exception as e:
-        return f"❌ Error with OpenAI API: {str(e)}"
+def summarize(transcript: str, prompt: str) -> str:
+    """Run the summarization prompt through the Gemini agent."""
+    full_prompt = f"{prompt.strip()}\n\nTranscript:\n{transcript.strip()}"
+    run: RunResponse = agent.run(full_prompt)
+    return run.content
