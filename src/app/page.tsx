@@ -48,10 +48,9 @@ export default function HomePage() {
   return (
     <div className="min-h-screen bg-gray-50 p-8">
       <div className="max-w-xl mx-auto bg-white p-6 rounded-xl shadow-md">
-        <h1 className="text-2xl font-bold mb-6 text-center">
+        <h1 className="text-2xl font-bold mb-6 text-center text-gray-900">
           🎥 YouTube Video Summarizer
         </h1>
-
         <form onSubmit={handleSubmit} className="space-y-4">
           <input
             type="text"
@@ -59,14 +58,14 @@ export default function HomePage() {
             value={videoUrl}
             onChange={(e) => setVideoUrl(e.target.value)}
             required
-            className="w-full p-2 border border-gray-300 rounded"
+            className="w-full p-3 border border-gray-300 rounded-lg text-gray-800 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
           <input
             type="text"
             placeholder='Prompt (e.g., "Summarize like I’m 10")'
             value={prompt}
             onChange={(e) => setPrompt(e.target.value)}
-            className="w-full p-2 border border-gray-300 rounded"
+            className="w-full p-3 border border-gray-300 rounded-lg text-gray-800 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
           <button
             type="submit"
@@ -80,15 +79,15 @@ export default function HomePage() {
         {error && <p className="text-red-500 mt-4">{error}</p>}
 
         {result && (
-          <div className="mt-6 space-y-4">
+          <div className="mt-6 space-y-6 text-gray-800">
             <div>
               <h2 className="text-xl font-semibold">📋 Summary:</h2>
-              <p>{result.summary}</p>
+              <p className="text-gray-700 leading-relaxed">{result.summary}</p>
             </div>
 
             <div>
-              <h3 className="font-medium">📌 Chapters:</h3>
-              <ul className="list-disc list-inside">
+              <h3 className="font-medium text-gray-800">📌 Chapters:</h3>
+              <ul className="list-disc list-inside text-gray-700">
                 {result.chapters.map((chap, idx) => (
                   <li key={idx}>
                     [{chap.start}] {chap.title}
@@ -98,7 +97,7 @@ export default function HomePage() {
             </div>
 
             <div>
-              <h3 className="font-medium">🖼️ Keyframes:</h3>
+              <h3 className="font-medium text-gray-800">🖼️ Keyframes:</h3>
               <div className="flex flex-wrap gap-2">
                 {result.keyframes.map((url, idx) => (
                   <img
@@ -112,8 +111,8 @@ export default function HomePage() {
             </div>
 
             <div>
-              <h3 className="font-medium">🔊 Audio Emotions:</h3>
-              <ul className="list-disc list-inside">
+              <h3 className="font-medium text-gray-800">🔊 Audio Emotions:</h3>
+              <ul className="list-disc list-inside text-gray-700">
                 {result.audio.map((emotion, idx) => (
                   <li key={idx}>{emotion}</li>
                 ))}
