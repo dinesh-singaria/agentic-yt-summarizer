@@ -114,14 +114,14 @@ export default function HomePage() {
               </div>
             </div>
 
-            <div>
+            {/* <div>
               <h3 className="font-medium text-gray-800">🔊 Audio Emotions:</h3>
               <ul className="list-disc list-inside text-gray-700">
                 {result.audio.map((emotion, idx) => (
                   <li key={idx}>{emotion}</li>
                 ))}
               </ul>
-            </div>
+            </div> */}
           </div>
         )}
       </div>
