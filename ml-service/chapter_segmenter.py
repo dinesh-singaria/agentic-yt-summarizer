@@ -1,4 +1,5 @@
 import re
+import os
 from phi.agent import Agent, RunResponse
 from phi.model.google import Gemini
 

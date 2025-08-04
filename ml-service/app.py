@@ -1,8 +1,10 @@
 from flask_cors import CORS
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_from_directory
 from summarizer import summarize
 from transcriber import get_transcript
 from chapter_segmenter import segment_into_chapters, parse_chapters 
+from keyframe_extractor import extract_keyframes_from_video_url
+import os
 
 
 app = Flask(__name__)
@@ -46,14 +48,32 @@ def summarize_route():
     except Exception as e:
         print("❌ Chapter segmentation error:", str(e))
         return jsonify({"error": f"Chapter segmentation failed: {str(e)}"}), 500
+    
+
+    # Step 4: Keyframe Extraction
+    print("🖼️ Step 4: Extracting keyframes...")
+    try:
+        keyframe_paths = extract_keyframes_from_video_url(video_url)
+        keyframe_urls = [f"http://localhost:5050/keyframes/{os.path.basename(p)}" for p in keyframe_paths]
+        print(f"✅ {len(keyframe_urls)} keyframes extracted.")
+    except Exception as e:
+        print("❌ Keyframe extraction failed:", str(e))
+        keyframe_urls = []
+
     print("🚀 Done! Returning response.")
+
 
     return jsonify({
         "summary": summary,
         "chapters": chapters,
-        "keyframes": [],
+        "keyframes": keyframe_urls,
         "audio": []
     })
+
+
+@app.route('/keyframes/<path:filename>')
+def serve_keyframe(filename):
+    return send_from_directory('keyframes', filename)
 
 if __name__ == '__main__':
     print("🚀 Flask server starting on http://localhost:5050")
