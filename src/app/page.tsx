@@ -106,7 +106,7 @@ export default function HomePage() {
                 {result.keyframes.map((url, idx) => (
                   <img
                     key={idx}
-                    src={url}
+                    src={`${url}?cb=${Date.now()}`} // optional cache buster
                     alt={`Keyframe ${idx}`}
                     className="w-24 rounded border"
                   />

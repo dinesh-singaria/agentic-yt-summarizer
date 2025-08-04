@@ -12,7 +12,7 @@ def download_video(video_url: str, downloads_dir: str = "downloads") -> str:
     video_path = os.path.join(downloads_dir, base_filename + ".mp4")
 
     ydl_opts = {
-        'format': 'bestvideo[ext=mp4]+bestaudio/best',
+        'format': 'best[height<=480]+bestaudio/best',
         'outtmpl': output_template,
         'merge_output_format': 'mp4',
         'quiet': True,
@@ -27,7 +27,7 @@ def download_video(video_url: str, downloads_dir: str = "downloads") -> str:
     return video_path
 
 
-def extract_keyframes(video_path: str, output_dir: str = "keyframes", threshold: float = 80.0) -> list:
+def extract_keyframes(video_path: str, output_dir: str = "keyframes", threshold: float = 70.0) -> list:
     os.makedirs(output_dir, exist_ok=True)
 
     video_manager = VideoManager([video_path])
@@ -67,4 +67,8 @@ def extract_keyframes_from_video_url(video_url: str) -> list:
     print("🧹 Cleaning up video file...")
     os.remove(video_path)
 
-    return keyframes
+    # Convert local paths to web-accessible URLs
+    base_url = "http://localhost:3000"  # Replace with your actual frontend base if different
+    keyframe_urls = [f"{base_url}/keyframes/{os.path.basename(path)}" for path in keyframe_paths]
+
+    return keyframe_urls
