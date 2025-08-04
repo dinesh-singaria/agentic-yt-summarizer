@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import ReactMarkdown from "react-markdown";
 
 type Chapter = {
   start: string;
@@ -49,7 +50,7 @@ export default function HomePage() {
     <div className="min-h-screen bg-gray-50 p-8">
       <div className="max-w-xl mx-auto bg-white p-6 rounded-xl shadow-md">
         <h1 className="text-2xl font-bold mb-6 text-center text-gray-900">
-          🎥 YouTube Video Summarizer
+          🎥 VidAgent: Prompt-Based Agentic Multimodal Summarizer
         </h1>
         <form onSubmit={handleSubmit} className="space-y-4">
           <input
@@ -81,8 +82,11 @@ export default function HomePage() {
         {result && (
           <div className="mt-6 space-y-6 text-gray-800">
             <div>
-              <h2 className="text-xl font-semibold">📋 Summary:</h2>
-              <p className="text-gray-700 leading-relaxed">{result.summary}</p>
+              {result?.summary && (
+                <div className="prose prose-sm text-gray-800">
+                  <ReactMarkdown>{result.summary}</ReactMarkdown>
+                </div>
+              )}
             </div>
 
             <div>

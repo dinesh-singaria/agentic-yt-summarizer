@@ -3,6 +3,8 @@ from dotenv import load_dotenv
 from phi.agent import Agent, RunResponse
 from phi.model.google import Gemini
 from phi.tools.duckduckgo import DuckDuckGo
+# from phi.model.openai import OpenAI
+from dotenv import load_dotenv
 
 load_dotenv()
 
@@ -10,10 +12,11 @@ load_dotenv()
 if not os.getenv("GEMINI_API_KEY"):
     raise RuntimeError(" GEMINI_API_KEY not found in environment")
 
-# Create a phantom “agent” powered by Gemini 2.0 Flash Exp
-agent = Agent(
+# Summarizer agent
+summarizer_agent = Agent(
     name="SummarizerAgent",
     model=Gemini(id="gemini-2.0-flash-exp"),
+    # model=OpenAI(id="gpt-4-turbo"),
     tools=[DuckDuckGo()],
     markdown=True  # summaries prefer plain text
 )
@@ -21,5 +24,5 @@ agent = Agent(
 def summarize(transcript: str, prompt: str) -> str:
     """Run the summarization prompt through the Gemini agent."""
     full_prompt = f"{prompt.strip()}\n\nTranscript:\n{transcript.strip()}"
-    run: RunResponse = agent.run(full_prompt)
+    run: RunResponse = summarizer_agent.run(full_prompt)
     return run.content
