@@ -52,14 +52,21 @@ def summarize_route():
     
 
     # Step 4: Keyframe Extraction
-    print("🖼️ Step 4: Extracting keyframes...")
-    try:
-        keyframe_paths = extract_keyframes_from_video_url(video_url)
-        keyframe_urls = [f"http://localhost:5050/keyframes/{os.path.basename(p)}" for p in keyframe_paths]
-        print(f"✅ {len(keyframe_urls)} keyframes extracted.")
-    except Exception as e:
-        print("❌ Keyframe extraction failed:", str(e))
-        keyframe_urls = []
+    print("🖼️ Extracting keyframes...")
+    keyframe_paths = extract_keyframes_from_video_url(video_url)
+    keyframe_urls = [f"http://localhost:5050/keyframes/{os.path.basename(p)}" for p in keyframe_paths]
+
+    # Step 5: Caption keyframes
+    print("🧠 Step 5: Captioning keyframes...")
+    captions_dict = caption_keyframes([p.replace("http://localhost:5050/keyframes/", "keyframes/") for p in keyframe_paths])
+
+    keyframes = [
+        {
+            "url": url,
+            "caption": captions_dict.get(os.path.basename(url), "")
+        }
+        for url in keyframe_paths
+    ]
 
 
     
@@ -70,8 +77,7 @@ def summarize_route():
     return jsonify({
         "summary": summary,
         "chapters": chapters,
-        "keyframes": keyframe_urls,
-        "audio": []
+        "keyframes": keyframes
     })
 
 
