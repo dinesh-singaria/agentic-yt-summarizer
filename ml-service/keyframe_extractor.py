@@ -27,7 +27,7 @@ def download_video(video_url: str, downloads_dir: str = "downloads") -> str:
     return video_path
 
 
-def extract_keyframes(video_path: str, output_dir: str = "keyframes", threshold: float = 70.0) -> list:
+def extract_keyframes(video_path: str, output_dir: str = "keyframes", threshold: float = 90.0) -> list:
     os.makedirs(output_dir, exist_ok=True)
 
     video_manager = VideoManager([video_path])
@@ -68,7 +68,7 @@ def extract_keyframes_from_video_url(video_url: str) -> list:
     os.remove(video_path)
 
     # Convert local paths to web-accessible URLs
-    base_url = "http://localhost:3000"  # Replace with your actual frontend base if different
-    keyframe_urls = [f"{base_url}/keyframes/{os.path.basename(path)}" for path in keyframe_paths]
+    base_url = "http://localhost:5050"  # Replace with your actual frontend base if different
+    keyframe_urls = [f"{base_url}/keyframes/{os.path.basename(path)}" for path in keyframes]
 
     return keyframe_urls

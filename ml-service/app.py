@@ -4,6 +4,7 @@ from summarizer import summarize
 from transcriber import get_transcript
 from chapter_segmenter import segment_into_chapters, parse_chapters 
 from keyframe_extractor import extract_keyframes_from_video_url
+from caption_generator import caption_keyframes
 import os
 
 
@@ -59,6 +60,9 @@ def summarize_route():
     except Exception as e:
         print("❌ Keyframe extraction failed:", str(e))
         keyframe_urls = []
+
+
+    
 
     print("🚀 Done! Returning response.")
 
