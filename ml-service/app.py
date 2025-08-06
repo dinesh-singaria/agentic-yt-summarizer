@@ -62,6 +62,21 @@ def summarize_route():
         keyframe_urls = []
 
 
+    # Step 5: Caption keyframes
+    print("🧠 Step 5: Captioning keyframes...")
+    from caption_generator import caption_keyframes
+
+    captions_dict = caption_keyframes([p.replace("http://localhost:5050/keyframes/", "keyframes/") for p in keyframe_paths])
+
+    keyframes = [
+        {
+            "url": url,
+            "caption": captions_dict.get(os.path.basename(url), "")
+        }
+        for url in keyframe_paths
+    ]
+
+
     
 
     print("🚀 Done! Returning response.")
@@ -70,7 +85,7 @@ def summarize_route():
     return jsonify({
         "summary": summary,
         "chapters": chapters,
-        "keyframes": keyframe_urls,
+        "keyframes": keyframes,
         "audio": []
     })
 
